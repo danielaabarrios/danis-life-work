@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dani's Life Work</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F7F5F1; --card-border: #D8D2C8;
+      --work: #2C2A1E; --create: #C8C0B0; --study: #9E9070;
+      --maintain: #D4CBBC; --play: #4A4740;
+      --text-dark: #2C2A1E; --text-mid: #5A5650; --text-light: #9E9890;
+      --accent: #8B7355; --dot: #D0CAC0; --danger: #C0554A;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); font-family: 'DM Mono', monospace;
+      color: var(--text-dark); min-height: 100vh;
+      padding: 48px 32px 80px;
+      background-image: radial-gradient(var(--dot) 1px, transparent 1px);
+      background-size: 24px 24px; overflow-x: hidden;
+    }
+
+    /* ── INTRO ── */
+    #intro {
+      position: fixed; inset: 0; background: var(--work); z-index: 200;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 20px; pointer-events: none;
+      transition: opacity 0.9s ease;
+    }
+    #intro.fade-out { opacity: 0; }
+    .intro-line {
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      font-size: clamp(28px, 5vw, 52px); color: rgba(255,255,255,0);
+      letter-spacing: 0.04em; opacity: 0; transform: translateY(14px);
+      transition: opacity 1s ease, transform 1s ease, color 1s ease;
+    }
+    .intro-sub {
+      font-family: 'DM Mono', monospace; font-size: clamp(10px,1.4vw,12px);
+      color: rgba(255,255,255,0); letter-spacing: 0.2em; text-transform: uppercase;
+      opacity: 0; transform: translateY(8px);
+      transition: opacity 1s ease 0.4s, transform 1s ease 0.4s, color 1s ease 0.4s;
+    }
+    #intro.visible .intro-line { opacity:1; transform:translateY(0); color:rgba(255,255,255,0.93); }
+    #intro.visible .intro-sub  { opacity:1; transform:translateY(0); color:rgba(255,255,255,0.4); }
+
+    /* ── PAGE ── */
+    .page {
+      max-width: 960px; margin: 0 auto;
+      display: flex; flex-direction: column; gap: 28px;
+      opacity: 0; transform: translateY(12px);
+      transition: opacity 0.9s ease 0.1s, transform 0.9s ease 0.1s;
+    }
+    .page.visible { opacity:1; transform:translateY(0); }
+
+    /* ── HEADER ── */
+    .header {
+      background: white; border: 1px solid var(--card-border);
+      border-radius: 16px; padding: 28px 36px;
+      display: flex; justify-content: space-between; align-items: flex-end;
+    }
+    .header-left h1 {
+      font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px;
+    }
+    .header-meta { font-size: 11px; color: var(--text-mid); letter-spacing: 0.04em; }
+    .header-field { display: inline-flex; align-items: baseline; gap: 0; white-space: nowrap; }
+    .header-field-label { display: block; font-size: 11px; color: var(--text-mid); letter-spacing: 0.04em; margin-bottom: 2px; }
+    .bracket { color: var(--text-mid); font-size: 11px; letter-spacing: 0; }
+    .header-right { text-align: right; font-size: 11px; color: var(--text-mid); letter-spacing: 0.04em; }
+
+    /* ── SECTIONS ── */
+    .section {
+      background: white; border: 1px solid var(--card-border);
+      border-radius: 16px; padding: 28px 36px;
+    }
+    .section-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px; padding-bottom: 14px;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .section-header h2 { font-size: 12px; font-weight: 400; letter-spacing: 0.06em; color: var(--text-mid); }
+    .date-tag { font-size: 11px; color: var(--text-light); letter-spacing: 0.08em; }
+
+    /* ── TAB BAR ── */
+    .tab-bar { display: flex; gap: 8px; align-items: center; position: relative; }
+    .tab-btn {
+      background: none; border: 1px solid var(--card-border);
+      border-radius: 6px; padding: 5px 12px;
+      font-family: 'DM Mono', monospace; font-size: 10px;
+      letter-spacing: 0.08em; color: var(--text-light);
+      cursor: pointer; transition: all 0.18s ease; white-space: nowrap;
+    }
+    .tab-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .tab-btn.active { background: var(--work); border-color: var(--work); color: white; }
+    .tab-btn.current-month { border-color: var(--accent); color: var(--accent); }
+    .tab-btn.current-month.active { background: var(--accent); border-color: var(--accent); color: white; }
+    .tab-btn.next-trigger.open,
+    .tab-btn.next-trigger.has-active { background: var(--work); border-color: var(--work); color: white; }
+    .tab-btn.next-trigger .chevron {
+      display: inline-block; margin-left: 5px; font-size: 8px;
+      transition: transform 0.2s ease; opacity: 0.7;
+    }
+    .tab-btn.next-trigger.open .chevron { transform: rotate(180deg); }
+    .tab-btn.archive-trigger { font-size: 9.5px; opacity: 0.65; }
+    .tab-btn.archive-trigger.open,
+    .tab-btn.archive-trigger.has-active { opacity: 1; background: #9E9890; border-color: #9E9890; color: white; }
+
+    /* dropdown panel */
+    .month-dropdown {
+      position: absolute; top: calc(100% + 8px); right: 0;
+      background: white; border: 1px solid var(--card-border);
+      border-radius: 12px; padding: 8px;
+      display: flex; flex-direction: column; gap: 6px;
+      z-index: 60; min-width: 160px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.1);
+      opacity: 0; transform: translateY(-6px) scale(0.98);
+      pointer-events: none;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+    .month-dropdown.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+    .dropdown-item {
+      background: none; border: 1px solid transparent;
+      border-radius: 7px; padding: 8px 12px;
+      font-family: 'DM Mono', monospace; font-size: 10px;
+      letter-spacing: 0.07em; color: var(--text-mid);
+      cursor: pointer; text-align: left; width: 100%;
+      transition: all 0.15s ease;
+    }
+    .dropdown-item:hover { background: #F0EDE8; color: var(--text-dark); border-color: var(--card-border); }
+    .dropdown-item.active { background: var(--work); color: white; border-color: var(--work); }
+    .dropdown-item.archive-item { color: var(--text-light); font-size: 9.5px; }
+    .dropdown-item.archive-item:hover { color: var(--text-mid); }
+    .dropdown-item.archive-item.active { background: #9E9890; border-color: #9E9890; color: white; }
+    .dropdown-divider { height: 1px; background: var(--card-border); margin: 2px 0; }
+
+    /* ── SECTION LABEL ── */
+    .month-eyebrow {
+      font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 4px;
+    }
+
+    .editable-inline {
+      outline: none; cursor: text; border-bottom: 1px dashed transparent;
+      transition: border-color 0.15s ease; min-width: 4px; display: inline;
+    }
+    .editable-inline:hover { border-bottom-color: var(--card-border); }
+    .editable-inline:focus { border-bottom-color: var(--accent); }
+
+    /* ── AREAS ── */
+    .areas-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+    .area-col { display: flex; flex-direction: column; gap: 10px; }
+    .area-tag {
+      border-radius: 10px; padding: 22px 16px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; position: relative; overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.25s ease;
+    }
+    .area-tag:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+    .area-tag span {
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      font-size: 26px; font-weight: 400; color: white;
+      letter-spacing: 0.02em; position: relative; z-index: 1;
+    }
+    .area-tag.work    { background: var(--work); }
+    .area-tag.create  { background: var(--create); }
+    .area-tag.study   { background: var(--study); }
+    .area-tag.maintain{ background: var(--maintain); }
+    .area-tag.play    { background: var(--play); }
+    .area-tag.create span, .area-tag.maintain span { color: var(--text-dark); }
+
+    /* ── FOCUS GRID ── */
+    .focus-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; align-items: start; }
+    .focus-col { display: flex; flex-direction: column; gap: 10px; transition: opacity 0.25s ease; }
+
+    /* ── CARDS ── */
+    .focus-card {
+      border-radius: 10px; padding: 14px;
+      font-size: 10.5px; line-height: 1.6; letter-spacing: 0.01em;
+      position: relative; transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.2s ease;
+    }
+    .focus-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.09); }
+    .focus-card.done { opacity: 0.32; }
+
+    /* carried over badge */
+    .carried-badge {
+      display: inline-block; font-size: 8px; letter-spacing: 0.1em;
+      background: rgba(255,255,255,0.18); border-radius: 4px;
+      padding: 2px 6px; margin-bottom: 6px; opacity: 0.7;
+      text-transform: uppercase;
+    }
+    .focus-card.work-primary .carried-badge,
+    .focus-card.work-secondary .carried-badge,
+    .focus-card.study-primary .carried-badge,
+    .focus-card.play-primary .carried-badge { background: rgba(255,255,255,0.15); }
+    .focus-card.create-primary .carried-badge,
+    .focus-card.create-secondary .carried-badge,
+    .focus-card.maintain-primary .carried-badge { background: rgba(0,0,0,0.08); color: var(--text-mid); }
+
+    .focus-card .obj-label {
+      font-size: 9px; letter-spacing: 0.1em; margin-bottom: 6px; opacity: 0.65;
+    }
+    .card-text { outline: none; cursor: text; word-break: break-word; }
+    .card-text:focus {
+      background: rgba(255,255,255,0.12); border-radius: 4px; padding: 2px 4px; margin: -2px -4px;
+    }
+    .focus-card.create-primary .card-text:focus,
+    .focus-card.create-secondary .card-text:focus,
+    .focus-card.maintain-primary .card-text:focus,
+    .focus-card.maintain-secondary .card-text:focus { background: rgba(0,0,0,0.06); }
+
+    .card-actions {
+      display: flex; gap: 6px; margin-top: 10px;
+      opacity: 0; transition: opacity 0.15s ease; align-items: center;
+    }
+    .focus-card:hover .card-actions { opacity: 1; }
+    .action-btn {
+      background: none; border: none; cursor: pointer;
+      font-family: 'DM Mono', monospace; font-size: 9px;
+      letter-spacing: 0.06em; padding: 3px 7px;
+      border-radius: 4px; transition: all 0.15s ease;
+    }
+    .btn-done { border: 1px solid currentColor; opacity: 0.55; }
+    .btn-done:hover { opacity: 1; }
+    .btn-delete { color: var(--danger); opacity: 0; border: 1px solid transparent; }
+    .focus-card:hover .btn-delete { opacity: 0.45; }
+    .btn-delete:hover { opacity: 1 !important; border-color: var(--danger); background: rgba(192,85,74,0.08); }
+
+    .label-input {
+      background: none; border: none; outline: none;
+      font-family: 'DM Mono', monospace; font-size: 9px;
+      letter-spacing: 0.1em; opacity: 0.65; cursor: text;
+      width: 100%; color: inherit;
+    }
+    .label-input:focus { opacity: 1; }
+
+    /* Card colors */
+    .focus-card.work-primary    { background: var(--work); color: white; }
+    .focus-card.work-secondary  { background: #4A4740; color: rgba(255,255,255,0.85); }
+    .focus-card.create-primary  { background: var(--create); color: var(--text-dark); }
+    .focus-card.create-secondary{ background: #E0D9CE; color: var(--text-mid); }
+    .focus-card.study-primary   { background: var(--study); color: white; }
+    .focus-card.maintain-primary  { background: #4A4740; color: rgba(255,255,255,0.9); text-align:center; }
+    .focus-card.maintain-secondary{ background: var(--create); color: var(--text-dark); text-align:center; }
+    .focus-card.play-primary    { background: var(--play); color: rgba(255,255,255,0.9); text-align:center; }
+    .focus-card.later-create    { background: #E8E4DC; color: var(--text-mid); }
+    .focus-card.later-study     { background: var(--study); color: white; }
+    .focus-card.note-primary    { background: #EDE6DD; color: var(--text-mid); border: 1.5px dashed var(--accent); }
+
+    /* Archive dimming */
+    .archive-mode .focus-card { cursor: default; }
+    .archive-mode .focus-card:hover { transform: none; box-shadow: none; }
+    .archive-mode .card-actions { display: none !important; }
+    .archive-mode .add-card-btn { display: none; }
+    .archive-mode .card-text { cursor: default; pointer-events: none; }
+    .archive-mode .label-input { pointer-events: none; }
+
+    .snowflake { display:block; font-size:16px; margin-bottom:6px; opacity:0.45; }
+
+    /* ── ADD CARD BTN ── */
+    .add-card-btn {
+      border-radius: 10px; padding: 12px 14px;
+      border: 1.5px dashed var(--card-border);
+      background: none; cursor: pointer;
+      font-family: 'DM Mono', monospace; font-size: 10px;
+      letter-spacing: 0.06em; color: var(--text-light); width: 100%;
+      transition: all 0.18s ease; text-align: left;
+    }
+    .add-card-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(139,115,85,0.04); }
+
+    /* ── PROGRESS ── */
+    .progress-wrap { margin-top: 18px; }
+    .progress-bar-bg { height: 2px; background: var(--card-border); border-radius: 4px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.5s ease; width: 0%; }
+    .progress-label { font-size: 9.5px; color: var(--text-light); letter-spacing: 0.08em; margin-top: 7px; text-align: right; }
+
+    /* ── PARKING LOT ── */
+    .section.later { position: relative; }
+    .later-badge {
+      position: absolute; top: -12px; right: 24px;
+      background: var(--accent); color: white; font-size: 9px;
+      letter-spacing: 0.14em; padding: 4px 12px; border-radius: 20px; text-transform: uppercase;
+    }
+    .later-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; align-items: start; }
+
+    /* ── EDITABLE AREA DESC ── */
+    .area-desc {
+      background: #F0EDE8; border-radius: 10px; padding: 14px;
+      font-size: 10.5px; line-height: 1.6; color: var(--text-mid); letter-spacing: 0.01em;
+      outline: none; cursor: text; transition: background 0.15s ease;
+    }
+    .area-desc:hover { background: #E8E3DC; }
+    .area-desc:focus { background: #E0DAD2; }
+    .area-desc strong { color: var(--text-dark); font-weight: 400; }
+
+    /* ── COLOR PICKER ── */
+    .color-picker {
+      display: flex; gap: 5px; margin-top: 8px;
+      opacity: 0; transition: opacity 0.15s ease; flex-wrap: wrap;
+    }
+    .focus-card:hover .color-picker { opacity: 1; }
+    .color-swatch {
+      width: 14px; height: 14px; border-radius: 50%;
+      cursor: pointer; border: 1.5px solid transparent;
+      transition: transform 0.12s ease, border-color 0.12s ease;
+      flex-shrink: 0;
+    }
+    .color-swatch:hover { transform: scale(1.25); }
+    .color-swatch.active { border-color: white; box-shadow: 0 0 0 1.5px rgba(0,0,0,0.3); }
+    .swatch-work     { background: #2C2A1E; }
+    .swatch-create   { background: #C8C0B0; }
+    .swatch-study    { background: #9E9070; }
+    .swatch-maintain { background: #D4CBBC; }
+    .swatch-play     { background: #4A4740; }
+    .swatch-note     { background: #B8A898; border: 1.5px dashed #8B7355; }
+    .focus-card.draggable { cursor: grab; }
+    .focus-card.draggable:active { cursor: grabbing; }
+    .focus-card.dragging {
+      opacity: 0.4; transform: scale(0.97);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+    }
+    .focus-col.drop-target {
+      outline: 2px dashed var(--accent);
+      outline-offset: 4px; border-radius: 10px;
+      background: rgba(139,115,85,0.04);
+    }
+    .focus-col.drop-target .add-card-btn {
+      border-color: var(--accent); color: var(--accent);
+    }
+    .integration {
+      background: #F0EDE8; border-radius: 12px; padding: 18px 22px;
+      font-size: 10.5px; color: var(--text-mid); line-height: 1.9;
+      letter-spacing: 0.02em; border-left: 3px solid var(--accent);
+    }
+    .integration strong { color: var(--text-dark); font-weight: 400; }
+
+    /* ── TOOLTIP ── */
+    .tooltip {
+      position: fixed; background: var(--work); color: rgba(255,255,255,0.88);
+      font-family: 'DM Mono', monospace; font-size: 9.5px; letter-spacing: 0.07em;
+      padding: 7px 13px; border-radius: 8px; pointer-events: none;
+      opacity: 0; transition: opacity 0.18s ease; z-index: 50; white-space: nowrap;
+    }
+    .tooltip.show { opacity: 1; }
+
+    /* ── SAVE INDICATOR ── */
+    #save-indicator {
+      position: fixed; bottom: 24px; right: 28px; font-size: 9.5px;
+      letter-spacing: 0.1em; color: var(--text-light); opacity: 0;
+      transition: opacity 0.4s ease; text-transform: uppercase;
+    }
+    #save-indicator.show { opacity: 1; }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      grid-column: 1 / -1; text-align: center;
+      padding: 40px 20px; color: var(--text-light);
+      font-size: 11px; letter-spacing: 0.08em;
+    }
+
+    @media (max-width: 700px) {
+      body { padding: 24px 16px 60px; }
+      .areas-grid, .focus-grid, .later-grid { grid-template-columns: repeat(2, 1fr); }
+      .header { flex-direction: column; gap: 12px; }
+      .header-right { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="intro">
+  <div class="intro-line">redefining productivity</div>
+  <div class="intro-sub">Dani's Life Work · <span id="intro-year"></span></div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+<div id="save-indicator">saved ✓</div>
+
+<div class="page" id="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <h1>Dani's Life Work</h1>
+      <div class="header-meta">
+        <span class="header-field">mission &nbsp;<span class="bracket">[</span><span id="mission-text" class="editable-inline" contenteditable="true" spellcheck="false"></span><span class="bracket">]</span></span>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="header-field-label">vision</span>
+      <span class="header-field"><span class="bracket">[</span><span id="vision-text" class="editable-inline" contenteditable="true" spellcheck="false"></span><span class="bracket">]</span></span>
+    </div>
+  </div>
+
+  <!-- LIFE AREAS -->
+  <div class="section">
+    <div class="areas-grid" id="areas-grid"></div>
+  </div>
+
+  <!-- FOCUS SECTION -->
+  <div class="section" id="focus-section">
+    <div class="section-header">
+      <div>
+        <div class="month-eyebrow" id="focus-eyebrow"></div>
+        <h2 id="focus-title">my focus</h2>
+      </div>
+      <div class="tab-bar" id="tab-bar"></div>
+    </div>
+    <div id="focus-grid" class="focus-grid"></div>
+    <div class="progress-wrap" id="progress-wrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-bar"></div></div>
+      <div class="progress-label" id="progress-label">0 / 0 completed</div>
+    </div>
+  </div>
+
+  <!-- PARKING LOT -->
+  <div class="section later">
+    <div class="later-badge" id="later-badge">for later</div>
+    <div class="section-header">
+      <h2>parking lot</h2>
+      <span class="date-tag" id="later-date-tag"></span>
+    </div>
+    <div class="later-grid" id="later-grid"></div>
+  </div>
+
+  <!-- INTEGRATION -->
+  <div class="integration">
+    <strong>the integration:</strong> &nbsp;scarlet oak (observe systems, culture, productivity) → learning log (capture daily) → una idealista (frameworks & content) → <strong>developing our body of work on conscious productivity</strong>.
+  </div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════
+   TIME HELPERS
+═══════════════════════════════════ */
+const MONTH_NAMES = ['january','february','march','april','may','june',
+                     'july','august','september','october','november','december'];
+
+function monthKey(year, month) { return `${year}-${String(month).padStart(2,'0')}`; }
+function parseKey(key) {
+  const [y,m] = key.split('-');
+  return { year: parseInt(y), month: parseInt(m) };
+}
+function addMonths(key, n) {
+  let { year, month } = parseKey(key);
+  month += n;
+  while (month > 12) { month -= 12; year++; }
+  while (month < 1)  { month += 12; year--; }
+  return monthKey(year, month);
+}
+function formatKey(key) {
+  const { year, month } = parseKey(key);
+  return `${MONTH_NAMES[month-1]} ${year}`;
+}
+function nowKey() {
+  const d = new Date();
+  return monthKey(d.getFullYear(), d.getMonth() + 1);
+}
+
+/* ═══════════════════════════════════
+   DEFAULT COLUMNS TEMPLATE
+═══════════════════════════════════ */
+function emptyColumns() {
+  return [
+    { cards: [], style: [] },
+    { cards: [], style: [] },
+    { cards: [], style: [] },
+    { cards: [], style: [] },
+    { cards: [], style: [] }
+  ];
+}
+
+function defaultFebColumns() {
+  return [
+    {
+      cards: [
+        { id:uid(), objNum:'O1', label:'work', text:'Implement lead tracking system to bring ease, organization, and clarity to how we bring in business and keep connected to opportunities.', done:false, carried:false },
+        { id:uid(), objNum:'', label:'work', text:'Focus on setting boundaries. Implement learning log.', done:false, carried:false }
+      ],
+      style: ['work-primary','work-primary']
+    },
+    {
+      cards: [
+        { id:uid(), objNum:'O2', label:'create', text:'Create outline of workshops for Blooming Retreat', done:false, carried:false },
+        { id:uid(), objNum:'O3', label:'create', text:'Finish coordinating all logistics for retreat', done:false, carried:false },
+        { id:uid(), objNum:'', label:'create', text:'Document process in Una Idealista', done:false, carried:false }
+      ],
+      style: ['create-primary','create-primary','create-primary']
+    },
+    {
+      cards: [
+        { id:uid(), objNum:'O4', label:'study', text:'Spend deep work time learning about implementation dashboards', done:false, carried:false }
+      ],
+      style: ['study-primary']
+    },
+    {
+      cards: [
+        { id:uid(), objNum:'', label:'maintain', text:'✺\nworkout 5 times a week', done:false, carried:false },
+        { id:uid(), objNum:'', label:'maintain', text:'✺\nfocus on increasing protein', done:false, carried:false }
+      ],
+      style: ['maintain-primary','maintain-primary']
+    },
+    {
+      cards: [
+        { id:uid(), objNum:'', label:'play', text:'✺\ndraw', done:false, carried:false }
+      ],
+      style: ['play-primary']
+    }
+  ];
+}
+
+function defaultMarColumns() {
+  return [
+    { cards: [{ id:uid(), objNum:'O6', label:'work', text:'Test improved implementation approach with one client', done:false, carried:false }], style:['work-primary'] },
+    { cards: [
+        { id:uid(), objNum:'O7', label:'create', text:'Have all workshops ready for the Blooming Retreat by March 18', done:false, carried:false },
+        { id:uid(), objNum:'O8', label:'create', text:'Facilitate a thought provoking and enriching retreat in Bali', done:false, carried:false }
+      ], style:['create-primary','create-primary'] },
+    { cards: [{ id:uid(), objNum:'O9', label:'study', text:'Spend deep work time researching the basics of cultural change', done:false, carried:false }], style:['study-primary'] },
+    { cards: [{ id:uid(), objNum:'', label:'maintain', text:'✺\nworkout 5 times a week', done:false, carried:false }], style:['maintain-primary'] },
+    { cards: [{ id:uid(), objNum:'', label:'play', text:'✺\nbali retreat is the play', done:false, carried:false }], style:['play-primary'] }
+  ];
+}
+
+/* ═══════════════════════════════════
+   STORAGE — Firebase Firestore
+═══════════════════════════════════ */
+const STORAGE_KEY = 'danis-life-work-v4'; // localStorage fallback key
+let data;
+let db;
+
+async function initFirebase() {
+  const { initializeApp } =
+    await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+  const { getFirestore, doc, getDoc, setDoc } =
+    await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+
+  const app = initializeApp({
+    apiKey:            "AIzaSyBKX8ucUORQvsTMJamBBRqytPG93Cbp69g",
+    authDomain:        "danis-life-work.firebaseapp.com",
+    projectId:         "danis-life-work",
+    storageBucket:     "danis-life-work.firebasestorage.app",
+    messagingSenderId: "138317113285",
+    appId:             "1:138317113285:web:a4995784f67289361f8dac"
+  });
+
+  db = getFirestore(app);
+  window._fsDoc = doc(db, 'dashboards', 'dani');
+  window._fsGet = getDoc;
+  window._fsSet = setDoc;
+}
+
+function migrateData() {
+  if (!data.areaDescs) {
+    data.areaDescs = [
+      'scarlet oak: my implementation & learning lab',
+      'una idealista: public work & community impact',
+      "topics I'm intentionally learning about at this moment",
+      'systems & routines that support my body, heart, and mind',
+      'activities & hobbies that refill my creativity and inspiration'
+    ];
+  }
+  if (!data.mission) data.mission = 'to improve the way we work and live';
+  if (!data.vision)  data.vision  = 'to redefine productivity';
+}
+
+async function loadData() {
+  const indicator = document.getElementById('save-indicator');
+  indicator.textContent = 'loading…';
+  indicator.classList.add('show');
+
+  try {
+    await initFirebase();
+    const snap = await window._fsGet(window._fsDoc);
+    if (snap.exists()) {
+      data = snap.data();
+      migrateData();
+    } else {
+      initDefaultData();
+    }
+  } catch(e) {
+    console.warn('Firebase unavailable, using localStorage:', e);
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) { data = JSON.parse(saved); migrateData(); }
+      else initDefaultData();
+    } catch(_) { initDefaultData(); }
+  }
+
+  indicator.classList.remove('show');
+  indicator.textContent = 'saved ✓';
+  runMonthTransition();
+}
+
+let saveTimer;
+function saveData() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(_) {}
+    if (window._fsDoc && window._fsSet) {
+      try { await window._fsSet(window._fsDoc, data); }
+      catch(e) { console.warn('Firestore save failed:', e); }
+    }
+    showSaved();
+  }, 600);
+}
+
+function showSaved() {
+  const el = document.getElementById('save-indicator');
+  el.textContent = 'saved ✓';
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+function initDefaultData() {
+  const feb = monthKey(2026, 2);
+  const mar = monthKey(2026, 3);
+  data = {
+    activeTab: feb,
+    mission: 'to improve the way we work and live',
+    vision: 'to redefine productivity',
+    areaDescs: [
+      'scarlet oak: my implementation & learning lab',
+      'una idealista: public work & community impact',
+      "topics I'm intentionally learning about at this moment",
+      'systems & routines that support my body, heart, and mind',
+      'activities & hobbies that refill my creativity and inspiration'
+    ],
+    months: {
+      [feb]: { columns: defaultFebColumns() },
+      [mar]: { columns: defaultMarColumns() }
+    },
+    archive: {},
+    later: {
+      columns: [
+        { cards: [], style: [] },
+        {
+          cards: [
+            { id:uid(), label:'', text:'Define how to re-engage with Una Idealista', done:false },
+            { id:uid(), label:'', text:'Write returning newsletter', done:false },
+            { id:uid(), label:'', text:'Create open resource website', done:false }
+          ],
+          style: ['later-create','later-create','later-create']
+        },
+        {
+          cards: [
+            { id:uid(), label:'', text:'MAPP Program Decision by June', done:false },
+            { id:uid(), label:'', text:'Write productivity literature review', done:false }
+          ],
+          style: ['later-study','later-study']
+        },
+        { cards: [], style: [] },
+        { cards: [], style: [] }
+      ]
+    }
+  };
+}
+
+/* ═══════════════════════════════════
+   UID
+═══════════════════════════════════ */
+function uid() { return 'c' + Math.random().toString(36).slice(2,9); }
+
+/* ═══════════════════════════════════
+   RENDER
+═══════════════════════════════════ */
+let activeFilter = null;
+
+// Color → style + label mapping
+const COLOR_MAP = [
+  { swatch: 'swatch-work',     style: 'work-primary',     label: 'work' },
+  { swatch: 'swatch-create',   style: 'create-primary',   label: 'create' },
+  { swatch: 'swatch-study',    style: 'study-primary',    label: 'study' },
+  { swatch: 'swatch-maintain', style: 'maintain-primary', label: 'maintain' },
+  { swatch: 'swatch-play',     style: 'play-primary',     label: 'play' },
+  { swatch: 'swatch-note',     style: 'note-primary',     label: 'note to self' },
+];
+
+function render() {
+  renderAreasGrid();
+  buildTabBar();
+  updateLaterDateLabel();
+  renderFocusGrid();
+  renderLaterGrid();
+  renderMissionVision();
+}
+
+function renderMissionVision() {
+  const mEl = document.getElementById('mission-text');
+  const vEl = document.getElementById('vision-text');
+  if (!mEl || !vEl) return;
+
+  mEl.textContent = data.mission;
+  vEl.textContent = data.vision;
+
+  mEl.addEventListener('input', () => { data.mission = mEl.textContent; saveData(); });
+  mEl.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); mEl.blur(); } });
+
+  vEl.addEventListener('input', () => { data.vision = vEl.textContent; saveData(); });
+  vEl.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); vEl.blur(); } });
+}
+
+function renderAreasGrid() {
+  const grid = document.getElementById('areas-grid');
+  if (!grid) return;
+  const AREA_CLASSES = ['work','create','study','maintain','play'];
+  grid.innerHTML = '';
+
+  AREA_CLASSES.forEach((cls, i) => {
+    const col = document.createElement('div');
+    col.className = 'area-col';
+
+    const tag = document.createElement('div');
+    tag.className = `area-tag ${cls}`;
+    tag.dataset.index = i;
+    tag.innerHTML = `<span>${cls}</span>`;
+    tag.addEventListener('click', () => filterByArea(i));
+
+    const desc = document.createElement('div');
+    desc.className = 'area-desc';
+    desc.contentEditable = true;
+    desc.spellcheck = false;
+    desc.textContent = data.areaDescs[i] || '';
+    desc.addEventListener('input', () => {
+      data.areaDescs[i] = desc.textContent;
+      saveData();
+    });
+    desc.addEventListener('click', e => e.stopPropagation());
+    desc.addEventListener('keydown', e => e.stopPropagation());
+
+    col.appendChild(tag);
+    col.appendChild(desc);
+    grid.appendChild(col);
+  });
+}
+
+function updateLaterDateLabel() {
+  const now = nowKey();
+  const m2 = addMonths(now, 2);
+  const m5 = addMonths(now, 5);
+  const label2 = formatKey(m2);
+  const label5 = formatKey(m5);
+  const dateTag = document.getElementById('later-date-tag');
+  const badge   = document.getElementById('later-badge');
+  if (dateTag) dateTag.textContent = `${label2} – ${label5}`;
+  if (badge)   badge.textContent   = `for later · ${label2.split(' ')[0]} – ${label5.split(' ')[0]}`;
+}
+
+function buildTabBar() {
+  const bar = document.getElementById('tab-bar');
+  bar.innerHTML = '';
+  const now = nowKey();
+  const nextKeys = [1,2,3].map(i => addMonths(now, i));
+  const archiveKeys = Object.keys(data.archive).sort().reverse();
+  const activeIsNext = nextKeys.includes(data.activeTab);
+  const activeIsArchive = archiveKeys.includes(data.activeTab);
+
+  // ── THIS MONTH button ──
+  const currentBtn = document.createElement('button');
+  currentBtn.className = 'tab-btn current-month' + (data.activeTab === now ? ' active' : '');
+  currentBtn.textContent = 'this month';
+  currentBtn.onclick = () => { closeAllDropdowns(); switchTab(now); };
+  bar.appendChild(currentBtn);
+
+  // ── NEXT MONTHS button + dropdown ──
+  const nextWrap = document.createElement('div');
+  nextWrap.style.cssText = 'position:relative;';
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'tab-btn next-trigger' +
+    (activeIsNext ? ' has-active' : '');
+  nextBtn.innerHTML = (activeIsNext ? formatKey(data.activeTab) : 'next months') +
+    ' <span class="chevron">▾</span>';
+  nextBtn.onclick = (e) => { e.stopPropagation(); toggleDropdown('next-drop'); };
+
+  const nextDrop = document.createElement('div');
+  nextDrop.className = 'month-dropdown';
+  nextDrop.id = 'next-drop';
+
+  nextKeys.forEach(key => {
+    const item = document.createElement('button');
+    item.className = 'dropdown-item' + (data.activeTab === key ? ' active' : '');
+    item.textContent = formatKey(key);
+    item.onclick = (e) => { e.stopPropagation(); closeAllDropdowns(); switchTab(key); };
+    nextDrop.appendChild(item);
+  });
+
+  nextWrap.appendChild(nextBtn);
+  nextWrap.appendChild(nextDrop);
+  bar.appendChild(nextWrap);
+
+  // ── ARCHIVE button + dropdown (only if archive has entries) ──
+  if (archiveKeys.length > 0) {
+    const archWrap = document.createElement('div');
+    archWrap.style.cssText = 'position:relative;';
+
+    const archBtn = document.createElement('button');
+    archBtn.className = 'tab-btn archive-trigger' +
+      (activeIsArchive ? ' has-active' : '');
+    archBtn.innerHTML = (activeIsArchive ? formatKey(data.activeTab) : 'archive') +
+      ' <span class="chevron">▾</span>';
+    archBtn.onclick = (e) => { e.stopPropagation(); toggleDropdown('arch-drop'); };
+
+    const archDrop = document.createElement('div');
+    archDrop.className = 'month-dropdown';
+    archDrop.id = 'arch-drop';
+
+    archiveKeys.forEach(key => {
+      const item = document.createElement('button');
+      item.className = 'dropdown-item archive-item' + (data.activeTab === key ? ' active' : '');
+      item.textContent = formatKey(key);
+      item.onclick = (e) => { e.stopPropagation(); closeAllDropdowns(); switchTab(key); };
+      archDrop.appendChild(item);
+    });
+
+    archWrap.appendChild(archBtn);
+    archWrap.appendChild(archDrop);
+    bar.appendChild(archWrap);
+  }
+}
+
+function toggleDropdown(id) {
+  const target = document.getElementById(id);
+  const isOpen = target.classList.contains('show');
+  closeAllDropdowns();
+  if (!isOpen) target.classList.add('show');
+  // update chevron on parent button
+  updateChevrons();
+}
+
+function closeAllDropdowns() {
+  document.querySelectorAll('.month-dropdown').forEach(d => d.classList.remove('show'));
+  updateChevrons();
+}
+
+function updateChevrons() {
+  document.querySelectorAll('.next-trigger, .archive-trigger').forEach(btn => {
+    const dropId = btn.closest('div').querySelector('.month-dropdown')?.id;
+    const isOpen = dropId && document.getElementById(dropId)?.classList.contains('show');
+    btn.classList.toggle('open', !!isOpen);
+  });
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', e => {
+  if (!e.target.closest('.month-dropdown') && !e.target.closest('.next-trigger') && !e.target.closest('.archive-trigger')) {
+    closeAllDropdowns();
+  }
+});
+
+function makeTabBtn(key, label, isCurrent, isArchive) {
+  // kept for compatibility but not used in new buildTabBar
+  const btn = document.createElement('button');
+  btn.className = 'tab-btn' + (isCurrent ? ' current-month' : '') + (data.activeTab === key ? ' active' : '');
+  btn.textContent = label;
+  btn.dataset.key = key;
+  btn.onclick = () => switchTab(key);
+  return btn;
+}
+
+function switchTab(key) {
+  data.activeTab = key;
+  saveData();
+  buildTabBar();
+  renderFocusGrid();
+}
+
+function renderFocusGrid() {
+  const now = nowKey();
+  const key  = data.activeTab;
+  const isArchive = !!data.archive[key];
+  const monthData = isArchive ? data.archive[key] : data.months[key];
+
+  // Eyebrow + title
+  document.getElementById('focus-eyebrow').textContent =
+    key === now ? 'current month' : isArchive ? 'archive' : 'upcoming';
+  document.getElementById('focus-title').textContent =
+    key === now ? 'my focus this month' : `my focus · ${formatKey(key)}`;
+
+  // Progress visibility
+  document.getElementById('progress-wrap').style.display = isArchive ? 'none' : 'block';
+
+  const grid = document.getElementById('focus-grid');
+  grid.innerHTML = '';
+  if (isArchive) grid.classList.add('archive-mode');
+  else grid.classList.remove('archive-mode');
+
+  if (!monthData) { grid.innerHTML = '<div class="empty-state">no data for this month</div>'; return; }
+
+  monthData.columns.forEach((col, colIdx) => {
+    const colEl = document.createElement('div');
+    colEl.className = 'focus-col';
+    colEl.dataset.col = colIdx;
+
+    col.cards.forEach((card, cardIdx) => {
+      const styleClass = (col.style && col.style[cardIdx]) || getDefaultStyle(colIdx);
+      colEl.appendChild(makeCard(card, styleClass, 'focus', key, colIdx, cardIdx, isArchive));
+    });
+
+    if (!isArchive) {
+      // Drop zone events
+      colEl.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
+      colEl.addEventListener('dragenter', e => { e.preventDefault(); colEl.classList.add('drop-target'); });
+      colEl.addEventListener('dragleave', e => { if (!colEl.contains(e.relatedTarget)) colEl.classList.remove('drop-target'); });
+      colEl.addEventListener('drop', e => {
+        e.preventDefault();
+        colEl.classList.remove('drop-target');
+        try {
+          const payload = JSON.parse(e.dataTransfer.getData('text/plain'));
+          moveCard(payload, 'focus', key, colIdx);
+        } catch(err) { console.error(err); }
+      });
+
+      const addBtn = document.createElement('button');
+      addBtn.className = 'add-card-btn';
+      addBtn.textContent = '+ add card';
+      addBtn.onclick = () => addCard('focus', key, colIdx);
+      colEl.appendChild(addBtn);
+    }
+
+    grid.appendChild(colEl);
+  });
+
+  if (!isArchive) updateProgress(key);
+}
+
+function renderLaterGrid() {
+  const grid = document.getElementById('later-grid');
+  grid.innerHTML = '';
+
+  data.later.columns.forEach((col, colIdx) => {
+    const colEl = document.createElement('div');
+    colEl.className = 'focus-col';
+    colEl.dataset.col = colIdx;
+    col.cards.forEach((card, cardIdx) => {
+      const styleClass = (col.style && col.style[cardIdx]) || 'later-create';
+      colEl.appendChild(makeCard(card, styleClass, 'later', null, colIdx, cardIdx, false));
+    });
+
+    // Drop zone — accept cards from focus months
+    colEl.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
+    colEl.addEventListener('dragenter', e => { e.preventDefault(); colEl.classList.add('drop-target'); });
+    colEl.addEventListener('dragleave', e => { if (!colEl.contains(e.relatedTarget)) colEl.classList.remove('drop-target'); });
+    colEl.addEventListener('drop', e => {
+      e.preventDefault();
+      colEl.classList.remove('drop-target');
+      try {
+        const payload = JSON.parse(e.dataTransfer.getData('text/plain'));
+        moveCard(payload, 'later', null, colIdx);
+      } catch(err) { console.error(err); }
+    });
+
+    const addBtn = document.createElement('button');
+    addBtn.className = 'add-card-btn';
+    addBtn.textContent = '+ add card';
+    addBtn.onclick = () => addCard('later', null, colIdx);
+    colEl.appendChild(addBtn);
+    grid.appendChild(colEl);
+  });
+
+  // Show drag hint if there are cards to drag — removed
+}
+
+/* ═══════════════════════════════════
+   MAKE CARD
+═══════════════════════════════════ */
+function makeCard(card, styleClass, section, monthKey, colIdx, cardIdx, readOnly) {
+  const el = document.createElement('div');
+  el.className = `focus-card ${styleClass}${card.done ? ' done' : ''}`;
+  el.dataset.id = card.id;
+
+  // Make all non-archive cards draggable
+  if (!readOnly) {
+    el.draggable = true;
+    el.classList.add('draggable');
+
+    el.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', JSON.stringify({
+        cardId: card.id,
+        fromSection: section,
+        fromMonthKey: monthKey || null,
+        fromColIdx: colIdx,
+        styleClass
+      }));
+      e.dataTransfer.effectAllowed = 'move';
+      setTimeout(() => el.classList.add('dragging'), 0);
+
+      // Highlight all valid drop zones
+      document.querySelectorAll('#focus-grid .focus-col:not(.archive-mode *)').forEach(c => c.classList.add('drop-target'));
+      document.querySelectorAll('#later-grid .focus-col').forEach(c => c.classList.add('drop-target'));
+    });
+
+    el.addEventListener('dragend', () => {
+      el.classList.remove('dragging');
+      document.querySelectorAll('.focus-col').forEach(c => c.classList.remove('drop-target'));
+    });
+  }
+
+  // Carried over badge
+  if (card.carried) {
+    const badge = document.createElement('div');
+    badge.className = 'carried-badge';
+    badge.textContent = '↑ carried over';
+    el.appendChild(badge);
+  }
+
+  // Label row: objNum (e.g. O1) + color label (e.g. work)
+  {
+    const labelRow = document.createElement('div');
+    labelRow.className = 'obj-label';
+
+    if (readOnly) {
+      const numSpan = document.createElement('span');
+      numSpan.className = 'obj-num-display';
+      numSpan.textContent = card.objNum || '';
+      const labelSpan = document.createElement('span');
+      labelSpan.className = 'obj-label-display';
+      labelSpan.textContent = card.label || '';
+      labelRow.appendChild(numSpan);
+      labelRow.appendChild(labelSpan);
+    } else {
+      // Objective number (O1, O2 etc) — free text
+      const numInput = document.createElement('input');
+      numInput.className = 'label-input obj-num-input';
+      numInput.type = 'text';
+      numInput.value = card.objNum || '';
+      numInput.placeholder = 'O1';
+      numInput.style.cssText = 'width:36px; margin-right:6px; flex-shrink:0;';
+      numInput.addEventListener('input', () => { card.objNum = numInput.value; saveData(); });
+      numInput.addEventListener('click', e => e.stopPropagation());
+      numInput.addEventListener('keydown', e => e.stopPropagation());
+
+      // Category label — set by color picker, but also manually editable
+      const labelInput = document.createElement('input');
+      labelInput.className = 'label-input';
+      labelInput.type = 'text';
+      labelInput.value = card.label || '';
+      labelInput.placeholder = 'label';
+      labelInput.style.cssText = 'flex:1; min-width:0;';
+      labelInput.addEventListener('input', () => { card.label = labelInput.value; saveData(); });
+      labelInput.addEventListener('click', e => e.stopPropagation());
+      labelInput.addEventListener('keydown', e => e.stopPropagation());
+
+      labelRow.style.cssText = 'display:flex; align-items:center;';
+      labelRow.appendChild(numInput);
+      labelRow.appendChild(labelInput);
+    }
+
+    el.appendChild(labelRow);
+  }
+
+  // Text
+  const textEl = document.createElement('div');
+  textEl.className = 'card-text';
+  if (!readOnly) textEl.contentEditable = true;
+  textEl.spellcheck = false;
+  textEl.innerHTML = card.text.replace(/✺\n/g,'<span class="snowflake">✺</span>').replace(/\n/g,'<br>');
+  if (!readOnly) {
+    textEl.addEventListener('input', () => { card.text = textEl.innerText; saveData(); });
+    textEl.addEventListener('click', e => e.stopPropagation());
+    textEl.addEventListener('keydown', e => e.stopPropagation());
+  }
+  el.appendChild(textEl);
+
+  // Actions
+  if (!readOnly) {
+    const actions = document.createElement('div');
+    actions.className = 'card-actions';
+
+    // Done button
+    const doneBtn = document.createElement('button');
+    doneBtn.className = 'action-btn btn-done';
+    doneBtn.style.color = 'inherit';
+    doneBtn.textContent = card.done ? 'unmark' : 'done';
+    doneBtn.onclick = e => {
+      e.stopPropagation();
+      card.done = !card.done;
+      el.classList.toggle('done', card.done);
+      doneBtn.textContent = card.done ? 'unmark' : 'done';
+      updateProgress(monthKey);
+      saveData();
+    };
+
+    // Delete button
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'action-btn btn-delete';
+    deleteBtn.textContent = 'delete';
+    deleteBtn.onclick = e => { e.stopPropagation(); deleteCard(section, monthKey, colIdx, card.id); };
+
+    actions.appendChild(doneBtn);
+    actions.appendChild(deleteBtn);
+    el.appendChild(actions);
+
+    // Color picker swatches
+    const picker = document.createElement('div');
+    picker.className = 'color-picker';
+
+    COLOR_MAP.forEach(({ swatch, style: swStyle, label: swLabel }) => {
+      const dot = document.createElement('div');
+      dot.className = `color-swatch ${swatch}${styleClass === swStyle ? ' active' : ''}`;
+      dot.title = swLabel;
+      dot.addEventListener('click', e => {
+        e.stopPropagation();
+        changeCardColor(el, card, section, monthKey, colIdx, swStyle, swLabel);
+        picker.querySelectorAll('.color-swatch').forEach(d => d.classList.remove('active'));
+        dot.classList.add('active');
+      });
+      picker.appendChild(dot);
+    });
+
+    el.appendChild(picker);
+  }
+
+  return el;
+}
+
+/* ═══════════════════════════════════
+   CARD ACTIONS
+═══════════════════════════════════ */
+function getDefaultStyle(colIdx) {
+  return ['work-primary','create-primary','study-primary','maintain-primary','play-primary'][colIdx] || 'work-primary';
+}
+
+function styleForLabel(label) {
+  const match = COLOR_MAP.find(c => c.label === label);
+  return match ? match.style : null;
+}
+
+function addCard(section, mKey, colIdx) {
+  const newCard = { id: uid(), objNum: '', label: '', text: 'new item', done: false, carried: false };
+  let col;
+
+  if (section === 'focus') {
+    col = data.months[mKey].columns[colIdx];
+  } else {
+    col = data.later.columns[colIdx];
+  }
+
+  col.cards.push(newCard);
+  if (!col.style) col.style = [];
+  col.style.push(section === 'later'
+    ? (colIdx === 2 ? 'later-study' : 'later-create')
+    : getDefaultStyle(colIdx));
+
+  if (section === 'focus') renderFocusGrid();
+  else renderLaterGrid();
+  saveData();
+
+  setTimeout(() => {
+    const newEl = document.querySelector(`[data-id="${newCard.id}"] .card-text`);
+    if (newEl) {
+      newEl.focus();
+      const range = document.createRange();
+      range.selectNodeContents(newEl);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+    }
+  }, 50);
+}
+
+function deleteCard(section, mKey, colIdx, cardId) {
+  let col;
+  if (section === 'focus') col = data.months[mKey].columns[colIdx];
+  else col = data.later.columns[colIdx];
+
+  const idx = col.cards.findIndex(c => c.id === cardId);
+  if (idx !== -1) { col.cards.splice(idx,1); if (col.style) col.style.splice(idx,1); }
+
+  if (section === 'focus') renderFocusGrid();
+  else renderLaterGrid();
+  saveData();
+}
+
+/* ── CHANGE CARD COLOR + LABEL ── */
+function changeCardColor(el, card, section, monthKey, colIdx, newStyle, newLabel) {
+  // Update the card's style in data
+  let col;
+  if (section === 'focus') col = data.months[monthKey]?.columns[colIdx];
+  else col = data.later.columns[colIdx];
+  if (!col) return;
+
+  const cardIdx = col.cards.findIndex(c => c.id === card.id);
+  if (cardIdx === -1) return;
+
+  // Update style array
+  if (!col.style) col.style = [];
+  col.style[cardIdx] = newStyle;
+
+  // Update label to match color
+  card.label = newLabel;
+
+  // Update the element's class live
+  const colorClasses = COLOR_MAP.map(c => c.style);
+  el.classList.remove(...colorClasses);
+  el.classList.add(newStyle);
+
+  // Update label input (second .label-input) to match color
+  const labelInputs = el.querySelectorAll('.label-input');
+  const labelInput = labelInputs[labelInputs.length - 1]; // last one is the category label
+  if (labelInput) labelInput.value = newLabel;
+
+  saveData();
+}
+function moveCard(payload, toSection, toMonthKey, toColIdx) {
+  const { cardId, fromSection, fromMonthKey, fromColIdx } = payload;
+
+  // Don't drop onto same column in same section/month
+  if (fromSection === toSection &&
+      fromMonthKey === toMonthKey &&
+      fromColIdx === toColIdx) return;
+
+  // Find and remove from source
+  let fromCol;
+  if (fromSection === 'focus') {
+    fromCol = data.months[fromMonthKey]?.columns[fromColIdx];
+  } else {
+    fromCol = data.later.columns[fromColIdx];
+  }
+  if (!fromCol) return;
+
+  const cardIdx = fromCol.cards.findIndex(c => c.id === cardId);
+  if (cardIdx === -1) return;
+
+  const preservedStyle = fromCol.style ? fromCol.style[cardIdx] : null;
+  const [card] = fromCol.cards.splice(cardIdx, 1);
+  if (fromCol.style) fromCol.style.splice(cardIdx, 1);
+
+  // Add to destination
+  let toCol;
+  if (toSection === 'focus') {
+    if (!data.months[toMonthKey]) data.months[toMonthKey] = { columns: emptyColumns() };
+    toCol = data.months[toMonthKey].columns[toColIdx];
+    card.carried = false;
+    if (!toCol.style) toCol.style = [];
+    toCol.cards.push(card);
+    const validStyles = COLOR_MAP.map(c => c.style);
+    toCol.style.push(preservedStyle && validStyles.includes(preservedStyle)
+      ? preservedStyle : getDefaultStyle(toColIdx));
+  } else {
+    toCol = data.later.columns[toColIdx];
+    card.carried = false;
+    if (!toCol.style) toCol.style = [];
+    toCol.cards.push(card);
+    const validStyles = COLOR_MAP.map(c => c.style);
+    toCol.style.push(preservedStyle && validStyles.includes(preservedStyle)
+      ? preservedStyle : 'later-create');
+  }
+
+  renderLaterGrid();
+  renderFocusGrid();
+  saveData();
+}
+
+/* ═══════════════════════════════════
+   PROGRESS (work, create, study only)
+═══════════════════════════════════ */
+function updateProgress(key) {
+  if (!data.months[key]) return;
+  const cols = data.months[key].columns;
+  let total = 0, done = 0;
+  cols.forEach((col, ci) => {
+    if (ci >= 3) return; // skip maintain (3) and play (4)
+    col.cards.forEach(c => { total++; if(c.done) done++; });
+  });
+  const pct = total ? (done/total)*100 : 0;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-label').textContent =
+    total ? `${done} / ${total} goals completed` : 'no goals yet';
+}
+
+function filterByArea(i) {
+  activeFilter = activeFilter === i ? null : i;
+  document.querySelectorAll('.area-tag').forEach((t,ti) =>
+    t.style.opacity = (activeFilter === null || ti === activeFilter) ? '1' : '0.3'
+  );
+  document.querySelectorAll('.focus-col').forEach((col,ci) => {
+    col.style.opacity = (activeFilter === null || (ci % 5) === activeFilter) ? '1' : '0.15';
+  });
+}
+
+document.addEventListener('click', e => {
+  // Reset area filter on outside click
+  if (activeFilter !== null && !e.target.closest('.area-tag')) {
+    activeFilter = null;
+    document.querySelectorAll('.area-tag').forEach(t => t.style.opacity = '1');
+    document.querySelectorAll('.focus-col').forEach(col => col.style.opacity = '1');
+  }
+});
+
+/* ═══════════════════════════════════
+   TOOLTIP
+═══════════════════════════════════ */
+const tooltip = document.getElementById('tooltip');
+document.addEventListener('mouseover', e => {
+  const btn = e.target.closest('.action-btn');
+  if (!btn) { tooltip.classList.remove('show'); return; }
+  tooltip.textContent = btn.classList.contains('btn-delete') ? 'delete card' : btn.textContent;
+  tooltip.classList.add('show');
+});
+document.addEventListener('mousemove', e => {
+  tooltip.style.left = (e.clientX + 14) + 'px';
+  tooltip.style.top  = (e.clientY - 32) + 'px';
+});
+document.addEventListener('mouseout', e => {
+  if (!e.target.closest('.action-btn')) tooltip.classList.remove('show');
+});
+
+/* ═══════════════════════════════════
+   INTRO + INIT
+═══════════════════════════════════ */
+window.addEventListener('load', async () => {
+  // Dynamic year
+  document.getElementById('intro-year').textContent = new Date().getFullYear();
+
+  const intro = document.getElementById('intro');
+  const page  = document.getElementById('page');
+
+  // Start intro animation
+  setTimeout(() => intro.classList.add('visible'), 120);
+
+  // Load data (Firebase or fallback)
+  await loadData();
+  render();
+
+  // Fade intro, show page
+  setTimeout(() => {
+    intro.classList.add('fade-out');
+    setTimeout(() => { intro.style.display = 'none'; page.classList.add('visible'); }, 900);
+  }, 2600);
+});
+</script>
+</body>
+</html>
