@@ -573,16 +573,22 @@ async function loadData() {
   indicator.classList.add('show');
 
   try {
-    await initFirebase();
-    const snap = await window._fsGet(window._fsDoc);
-    if (snap.exists()) {
-      data = snap.data();
-      migrateData();
-    } else {
-      initDefaultData();
-    }
+    // Give Firebase 4 seconds max to respond
+    await Promise.race([
+      (async () => {
+        await initFirebase();
+        const snap = await window._fsGet(window._fsDoc);
+        if (snap.exists()) {
+          data = snap.data();
+          migrateData();
+        } else {
+          initDefaultData();
+        }
+      })(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Firebase timeout')), 4000))
+    ]);
   } catch(e) {
-    console.warn('Firebase unavailable, using localStorage:', e);
+    console.warn('Firebase failed, using localStorage:', e.message);
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) { data = JSON.parse(saved); migrateData(); }
@@ -592,7 +598,6 @@ async function loadData() {
 
   indicator.classList.remove('show');
   indicator.textContent = 'saved ✓';
-  runMonthTransition();
 }
 
 let saveTimer;
@@ -1321,15 +1326,26 @@ window.addEventListener('load', async () => {
   // Start intro animation
   setTimeout(() => intro.classList.add('visible'), 120);
 
-  // Load data (Firebase or fallback)
-  await loadData();
+  // Load data with a hard 5s timeout so we never get stuck
+  try {
+    await Promise.race([
+      loadData(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+    ]);
+  } catch(e) {
+    console.warn('Load timed out or failed, using defaults:', e);
+    if (!data) initDefaultData();
+    runMonthTransition();
+  }
+
   render();
 
   // Fade intro, show page
+  const delay = Math.max(0, 2600);
   setTimeout(() => {
     intro.classList.add('fade-out');
     setTimeout(() => { intro.style.display = 'none'; page.classList.add('visible'); }, 900);
-  }, 2600);
+  }, delay);
 });
 </script>
 </body>
